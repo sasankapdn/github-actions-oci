@@ -14,7 +14,7 @@ jobs:
 
       - name: Get access to OCIR
         id: get-ocir
-        uses: oracle-actions/get-ocir-repository@v1.0
+        uses: oracle-actions/get-ocir-repository@v1.2
         with:
           name: ${{ secrets.OCI_DOCKER_REPO }}
           compartment: ${{ secrets.OCI_COMPARTMENT_OCID }}
