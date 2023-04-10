@@ -14,6 +14,7 @@ jobs:
       OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
       OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+      OKE_CLUSTER_ID: ${{ secrets.OKE_CLUSTER_ID }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
