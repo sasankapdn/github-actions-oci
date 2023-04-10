@@ -51,6 +51,8 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
     steps:
 
       - name: Download chart
