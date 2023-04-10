@@ -48,25 +48,6 @@ jobs:
           name: app-chart-${{ github.sha }}
           path: chart/
 
-  install-kubectl:
-    runs-on: ubuntu-latest
-    name: Install Kubectl for OKE
-    env:
-      OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
-      OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
-      OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
-      OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
-      OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-
-    steps:
-      - name: Configure Kubectl
-        uses: oracle-actions/configure-kubectl-oke@v1.3.1
-        id: test-configure-kubectl-oke-action
-        with:
-          cluster: ${{ secrets.OKE_CLUSTER_ID }}
-
-      - name: Run Kubectl
-        run: kubectl get nodes -A
 
   deploy:
     needs: build
