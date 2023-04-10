@@ -47,7 +47,29 @@ jobs:
         with:
           name: app-chart-${{ github.sha }}
           path: chart/
+      - name: 'Install OCI CLI'
+          run: |
+            mkdir ~/.oci
+            echo "${{ secrets.OCI_CONFIG }}" > ~/.oci/config
+            echo "${{ secrets.OCI_KEY_FILE }}" > ~/.oci/key.pem
+            curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+            chmod +x install.sh
+            ./install.sh --accept-all-defaults
+            echo "/home/runner/bin" >> $GITHUB_PATH
+            exec -l $SHELL
+            oci setup repair-file-permissions --file /home/runner/.oci/config
+            oci setup repair-file-permissions --file /home/runner/.oci/key.pem
 
+        - name: 'Install kubectl'
+          run: |
+            mkdir /tmp/.kube
+            curl -L -O "https://dl.k8s.io/release/v1.22.4/bin/linux/amd64/kubectl" -o kubectl
+            chmod +x kubectl
+            mv kubectl /usr/local/bin
+            echo "${{ secrets.KUBECONFIG }}" > /tmp/.kube/config
+            echo "KUBECONFIG=/tmp/.kube/config" >> $GITHUB_ENV
+        - name: 'Currently running services'
+          run: kubectl -n free-ns get pods
 
   deploy:
     needs: build
@@ -61,30 +83,6 @@ jobs:
         with:
           name: app-chart-${{ github.sha }}
           path: chart/
-
-    - name: 'Install OCI CLI'
-        run: |
-          mkdir ~/.oci
-          echo "${{ secrets.OCI_CONFIG }}" > ~/.oci/config
-          echo "${{ secrets.OCI_KEY_FILE }}" > ~/.oci/key.pem
-          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-          chmod +x install.sh
-          ./install.sh --accept-all-defaults
-          echo "/home/runner/bin" >> $GITHUB_PATH
-          exec -l $SHELL
-          oci setup repair-file-permissions --file /home/runner/.oci/config
-          oci setup repair-file-permissions --file /home/runner/.oci/key.pem
-
-      - name: 'Install kubectl'
-        run: |
-          mkdir /tmp/.kube
-          curl -L -O "https://dl.k8s.io/release/v1.22.4/bin/linux/amd64/kubectl" -o kubectl
-          chmod +x kubectl
-          mv kubectl /usr/local/bin
-          echo "${{ secrets.KUBECONFIG }}" > /tmp/.kube/config
-          echo "KUBECONFIG=/tmp/.kube/config" >> $GITHUB_ENV
-      - name: 'Currently running services'
-        run: kubectl -n free-ns get pods
 
       - name: Helm deploy
         id: helm-deploy
